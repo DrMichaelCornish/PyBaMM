@@ -2,14 +2,14 @@ import pybamm
 from .ZeroD_Chemistry_1 import ZeroD_Chemistry_1
 
 
-class MarinescuEtAl2016(ZeroD_Chemistry_1):
+class HuaEtAl2019(ZeroD_Chemistry_1):
     """
     Zero Dimensional model with Chemistry 1
     
     S_{8}^{0} + 4e^{-} => 2 S_{4}^{2-}
     S_{4}^{2-} + 4e^{-} => S_{2}^{2-} + 2S^{2-}
 
-    along with degradation effects specified in reference [2] below. 
+    along with thermal effects specified in reference [3] below. 
     
     Parameters
     ----------
@@ -36,10 +36,8 @@ class MarinescuEtAl2016(ZeroD_Chemistry_1):
             Storage, 21 (2019), 765-772.
     """
     
-    def __init__(self, options=None, name="Marinescu et al. (2018)"):
+    def __init__(self, options=None, name="Hua et al. (2019)"):
         super().__init__(options, name)
-        
-        
         
         # we change the general model to remove the degradation model
         
@@ -123,14 +121,3 @@ class MarinescuEtAl2016(ZeroD_Chemistry_1):
         dS4dt = (ns8 * Ms * i_H / (ne * F)) + k_s * S8 - (ns4 * Ms * i_L / (ne * F))
         self.rhs.update({S4 :dS4dt})
         
-        
-        # remove the degradation effects
-        # we change the general model to have no temperature dynamics. 
-        
-        dTcdt = 0*Tc
-        self.rhs.update({Tc :dTcdt})
-        self.initial_conditions.update(
-            {
-                self.variables["Cell Temperature [K]"] : param.Ta
-            }
-        )
