@@ -144,10 +144,10 @@ class ZeroD_Chemistry_5(BaseModel):
         # Differential equation (8a) in [1]
         dS8dt = -(ns8 * Ms * i_H / (nH * F))  -k_s*S8
         
-        dS6dt = .75*(ns8 * Ms * i_H / (nH * F)) - (ns6 * Ms * i_M / (nM * F)) 
+        dS6dt = .75*(ns8 * Ms * i_H / (nH * F)) - (ns6 * Ms * i_M / (nM * F)) + .75*k_s*S8
 
         # Differential equation (8b) in [1]
-        dS4dt = .25*(ns8 * Ms * i_H  / (nH * F))  - (ns4 * Ms * i_M / (nM * F)) + k_s*S8
+        dS4dt = .25*(ns8 * Ms * i_H  / (nH * F))  - (ns4 * Ms * i_M / (nM * F)) + .25*k_s*S8
 
         # Differential equation (8c) in [1]
         dS2dt = 5 * Ms * i_M / (nM * F) - (ns2 * Ms * i_L / (nL * F))
