@@ -85,6 +85,7 @@ class ZeroD_Chemistry_5(BaseModel):
         E_H_coef = R * Ta / (nH * F)
         E_M_coef = R * Ta / (nM * F)
         E_L_coef = R * Ta / (nL * F)
+        
         f_h = (ns4 ** (1/6)) * (ns6 ** (1/6)) * (Ms ** (1/3)) * (v ** (1/3)) / (ns8 ** (1/6))
         f_m = (ns2 ** (5/6)) * (Ms ** (1/2)) * (v ** (1/2)) / ((ns4 ** (1/6)) * (ns6 ** (1/6)))
         f_l = ns * (Ms ** (1/2)) * (v ** (1/2)) / (ns2 ** (1/2))
@@ -142,18 +143,18 @@ class ZeroD_Chemistry_5(BaseModel):
         self.algebraic.update({V: algebraic_condition})
 
         # Differential equation (8a) in [1]
-        dS8dt = -(ns8 * Ms * i_H / (nH * F))  -k_s*S8
+        dS8dt = -((3/10)*ns8 * Ms * i_H / (nH * F))  -k_s*S8
         
-        dS6dt = .75*(ns8 * Ms * i_H / (nH * F)) - (ns6 * Ms * i_M / (nM * F)) + .75*k_s*S8
+        dS6dt = .5*((3/10) * ns8 * Ms * i_H / (nH * F)) - ((1/6) * ns6 * Ms * i_M / (nM * F)) + .75*k_s*S8
 
         # Differential equation (8b) in [1]
-        dS4dt = .25*(ns8 * Ms * i_H  / (nH * F))  - (ns4 * Ms * i_M / (nM * F)) + .25*k_s*S8
+        dS4dt = .5*((3/10) * ns8 * Ms * i_H  / (nH * F))  - ((1/6) * ns4 * Ms * i_M / (nM * F)) + .25*k_s*S8
 
         # Differential equation (8c) in [1]
-        dS2dt = 5 * Ms * i_M / (nM * F) - (ns2 * Ms * i_L / (nL * F))
+        dS2dt = (ns6+ns4) * (1/6) * Ms * i_M / (nM * F) - ((1/2) * ns2 * Ms * i_L / (nL * F))
 
         # Differential equation (8d) in [1]
-        dSdt = (ns2 * Ms * i_L / (nL * F)) - k_p * Sp * (S - S_star) / (v * rho_s)
+        dSdt = ((1/2) * ns2 * Ms * i_L / (nL * F)) - k_p * Sp * (S - S_star) / (v * rho_s)
 
         # Differential equation (8e) in [1]
         dSpdt = k_p * Sp * (S - S_star) / (v * rho_s)
