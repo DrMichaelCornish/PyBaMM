@@ -115,7 +115,7 @@ class ZeroD_Chemistry_5(BaseModel):
         gamma = param.gamma
         
         g8H = 1/(1 + gamma*pybamm.exp(-kappa_a*S8))
-        g64H = 1/((1 + gamma*pybamm.exp(-kappa_c*(S6))) * (1 + gamma*pybamm.exp(-kappa_c*(S4))))
+        g64H = 1/(1 + gamma*pybamm.exp(-kappa_c*(S6+S4)))#1/((1 + gamma*pybamm.exp(-kappa_c*(S6))) * (1 + gamma*pybamm.exp(-kappa_c*(S4))))
         g64M = 1/((1 + gamma*pybamm.exp(-kappa_a*(S6))) * (1 + gamma*pybamm.exp(-kappa_a*(S4))))
         g2M = 1/(1 + gamma*pybamm.exp(-kappa_c*S2))
         g2L = 1/(1 + gamma*pybamm.exp(-kappa_a*S2))
