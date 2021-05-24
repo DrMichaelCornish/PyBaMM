@@ -56,7 +56,7 @@ class ZeroD_Chemistry_4(BaseModel):
         il0 = param.il0
         rho_s = param.rho_s
         EH0 = param.EH0
-        EM0 = 2.1
+        EM0 = param.EM0
         EL0 = param.EL0
 
         # model-specific unknown parameters
