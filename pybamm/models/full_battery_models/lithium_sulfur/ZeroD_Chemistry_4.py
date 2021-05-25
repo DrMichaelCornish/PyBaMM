@@ -52,7 +52,7 @@ class ZeroD_Chemistry_4(BaseModel):
         ns8 = param.ns8
         ne = param.ne
         ih0 = param.ih0
-        im0 = 5.0
+        im0 = param.il0
         il0 = param.il0
         rho_s = param.rho_s
         EH0 = param.EH0
@@ -99,14 +99,25 @@ class ZeroD_Chemistry_4(BaseModel):
 
         # Low plateau over-potenital [V] as defined by equation (6b) in [1]
         eta_L = V - E_L
+        
+        kappa = param.kappa
+        gamma = param.gamma
+        
+        g8H = 1/(1 + gamma*pybamm.exp(-kappa*S8))
+        #g64H = 1/(1 + gamma*pybamm.exp(-kappa_c*S8))#1/((1 + gamma*pybamm.exp(-kappa_c*(S6))) * (1 + gamma*pybamm.exp(-kappa_c*(S4))))
+        g64M = 1/(1 + gamma*pybamm.exp(-kappa*S4))
+        #g2M = 1/(1 + gamma*pybamm.exp(-kappa_c*S2))
+        g2L = 1/(1 + gamma*pybamm.exp(-kappa*S2))
+        #g1L = 1/(1 + gamma*pybamm.exp(-kappa_c*S))
+        
 
         # High plateau current [A] as defined by equation (5a) in [1]
-        i_H = -2 * ih0 * ar * pybamm.sinh(iH_coef * eta_H)
+        i_H = -2 * ih0 * ar * g8H * pybamm.sinh(iH_coef * eta_H)
         
-        i_M = -2 * im0 * ar * pybamm.sinh(iM_coef * eta_M)
+        i_M = -2 * im0 * ar * g64M * pybamm.sinh(iM_coef * eta_M)
 
         # Low plateau current [A] as defined by equation (5b) in [1]
-        i_L = -2 * il0 * ar * pybamm.sinh(iL_coef * eta_L)
+        i_L = -2 * il0 * ar * g2L * pybamm.sinh(iL_coef * eta_L)
 
         # Theoretical capacity [Ah] of the cell as defined by equation (2) in [2]
         cth = (3 * ne * F * S8 / (ns8 * Ms) + ne * F * S4 / (ns4 * Ms)) / 3600
