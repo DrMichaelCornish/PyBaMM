@@ -27,6 +27,7 @@ class LithiumSulfurParameters:
         self.ne = pybamm.Parameter("Electron number per reaction [electrons]")
         
         self.il0 = pybamm.Parameter("Exchange current density L [A.m-2]")
+        self.im0 = pybamm.Parameter("Exchange current density M [A.m-2]")
         self.ih0 = pybamm.Parameter("Exchange current density H [A.m-2]")
         self.m_s = pybamm.Parameter("Mass of active sulfur per cell [g]")
         self.rho_s = pybamm.Parameter("Density of precipitated Sulfur [g.L-1]")
