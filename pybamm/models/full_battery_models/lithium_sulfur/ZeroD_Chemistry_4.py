@@ -52,7 +52,7 @@ class ZeroD_Chemistry_4(BaseModel):
         ns8 = param.ns8
         ne = param.ne
         ih0 = param.ih0
-        im0 = param.il0
+        im0 = param.im0
         il0 = param.il0
         rho_s = param.rho_s
         EH0 = param.EH0
