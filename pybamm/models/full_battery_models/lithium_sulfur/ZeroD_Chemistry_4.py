@@ -126,6 +126,7 @@ class ZeroD_Chemistry_4(BaseModel):
 
         # Shuttle coefficient
         k_s = ( k_s_charge * (I < 0) ) + ( k_s_discharge * (I >= 0) )
+        k_p_used = ( - k_p * (I < 0) ) + ( k_p * (I >= 0) )
 
         ###################################
         # Dynamic model functions
@@ -142,7 +143,7 @@ class ZeroD_Chemistry_4(BaseModel):
         dS4dt = (ns8 * Ms * i_H / (nH * F)) + k_s * S8 - (ns4 * Ms * i_M / (nM * F))
 
         # Differential equation (8c) in [1]
-        dS2dt = ns4 * Ms * i_M / (nM * F) - (ns2 * Ms * i_L / (nM * F))
+        dS2dt = ns4 * Ms * i_M / (nM * F) - (ns2 * Ms * i_L / (nM * F)) 
 
         # Differential equation (8d) in [1]
         dSdt = (ns2 * Ms * i_L / (nM * F)) - k_p * Sp * (S - S_star) / (v * rho_s)
