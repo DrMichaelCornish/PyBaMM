@@ -49,7 +49,7 @@ class ZeroD_Chemistry_1(BaseModel):
         S = pybamm.Variable("S [g]")
         Sp = pybamm.Variable("Precipitated Sulfur [g]")
         Ss = pybamm.Variable("Shuttled Sulfur [g]")
-        Tc = pybamm.Variable("Cell Temperature [K]")
+        #Tc = pybamm.Variable("Cell Temperature [K]")
 
         #######################################
         # Model parameters as defined in table (1) in [1]. Parameters with 'H' or
@@ -62,6 +62,7 @@ class ZeroD_Chemistry_1(BaseModel):
         F = param.F
         T = param.T_ref
         Ta = param.Ta
+        Tc = T
         N = param.N
 
         # model-specific known parameters
@@ -100,10 +101,10 @@ class ZeroD_Chemistry_1(BaseModel):
         #######################################################
 
         # High plateau potenital [V] as defined by equation (2a) in [1]
-        E_H = EH0 + E_H_coef * pybamm.log(f_h * S8 / (S4 ** 2))
+        E_H = EH0 + E_H_coef * ( pybamm.log(f_h) + pybamm.log(S8) - 2*pybamm.log(S4) )
 
         # Low plateau potenital [V] as defined by equation (2b) in [1]
-        E_L = EL0 + E_H_coef * pybamm.log(f_l * S4 / (S2 * (S ** 2)))
+        E_L = EL0 + E_H_coef * ( pybamm.log(f_l) + pybamm.log(S4) - pybamm.log(S2) - 2*pybamm.log(S) ) 
 
         # High plateau over-potenital [V] as defined by equation (6a) in [1]
         eta_H = V - E_H
@@ -150,9 +151,9 @@ class ZeroD_Chemistry_1(BaseModel):
         dSsdt = k_s * S8
         
         # Differential equation (8g) in Supplementary material A of [3] (set RHS to zero to retrieve Marinsecu et al. (2016,2018))
-        dTcdt = ((k_s*ne*F*S8*V/(ns8*Ms)) - h*(Tc-Ta))/(m_c*c_h)
+        #dTcdt = ((k_s*ne*F*S8*V/(ns8*Ms)) - h*(Tc-Ta))/(m_c*c_h)
 
-        self.rhs.update({S8: dS8dt, S4: dS4dt, S2: dS2dt, S: dSdt, Sp: dSpdt, Ss : dSsdt, Tc : dTcdt})
+        self.rhs.update({S8: dS8dt, S4: dS4dt, S2: dS2dt, S: dSdt, Sp: dSpdt, Ss : dSsdt})#, Tc : dTcdt})
 
         ##############################
         # Model variables
@@ -168,7 +169,7 @@ class ZeroD_Chemistry_1(BaseModel):
                 "Precipitated Sulfur [g]": Sp,
                 "Shuttled Sulfur [g]" : Ss,
                 "Shuttle coefficient [s-1]": k_s,
-                "Cell Temperature [K]" : Tc,
+                #"Cell Temperature [K]" : Tc,
                 "Shuttle rate [g-1.s-1]": k_s * S8,
                 "High plateau potential [V]": E_H,
                 "Low plateau potential [V]": E_L,
@@ -198,7 +199,7 @@ class ZeroD_Chemistry_1(BaseModel):
                 self.variables["Precipitated Sulfur [g]"]: param.Sp_initial,
                 self.variables["Terminal voltage [V]"]: param.V_initial,
                 self.variables["Shuttled Sulfur [g]"] : param.Ss_initial,
-                self.variables["Cell Temperature [K]"] : param.Tc_initial
+                #self.variables["Cell Temperature [K]"] : param.Tc_initial
             }
         )
 

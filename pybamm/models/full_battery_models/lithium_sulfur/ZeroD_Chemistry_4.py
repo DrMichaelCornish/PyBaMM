@@ -85,12 +85,12 @@ class ZeroD_Chemistry_4(BaseModel):
         #######################################################
 
         # High plateau potenital [V] as defined by equation (2a) in [1]
-        E_H = EH0 + E_H_coef * pybamm.log(f_h * (S8**(1/4)) / (S4 ** (1/2)))
+        E_H = EH0 + E_H_coef * (pybamm.log(f_h) + 0.25*pybamm.log(S8) - 0.5*pybamm.log(S4) )
         
-        E_M = EM0 + E_M_coef * pybamm.log(f_m * (S4**(1/2)) / S2)
+        E_M = EM0 + E_M_coef * (pybamm.log(f_m) + 0.5*pybamm.log(S4) - pybamm.log(S2) ) 
 
         # Low plateau potenital [V] as defined by equation (2b) in [1]
-        E_L = EL0 + E_L_coef * pybamm.log(f_l * (S2**(1/2)) / S)
+        E_L = EL0 + E_L_coef * (pybamm.log(f_l) + 0.5*pybamm.log(S2) - pybamm.log(S) ) 
 
         # High plateau over-potenital [V] as defined by equation (6a) in [1]
         eta_H = V - E_H
@@ -126,7 +126,7 @@ class ZeroD_Chemistry_4(BaseModel):
 
         # Shuttle coefficient
         k_s = ( k_s_charge * (I < 0) ) + ( k_s_discharge * (I >= 0) )
-        k_p_used = ( - k_p * (I < 0) ) + ( k_p * (I >= 0) )
+        
 
         ###################################
         # Dynamic model functions
