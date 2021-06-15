@@ -160,7 +160,7 @@ class ZeroD_Chemistry_4(BaseModel):
         self.variables.update(
             {
                 "Time [s]": pybamm.t * self.timescale,
-                "Capacity [Ah]": pybamm.t * self.timescale * pybamm.abs(I) / 3600,
+                "Capacity [Ah]": pybamm.t * self.timescale * pybamm.AbsoluteValue(I) / 3600,
                 "S8 [g]": S8,
                 "S4 [g]": S4,
                 "S2 [g]": S2,
