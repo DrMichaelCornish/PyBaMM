@@ -2,7 +2,7 @@ import pybamm
 from .base_lithium_sulfur_model import BaseModel
 
 
-class ZeroD_Chemistry_4(BaseModel):
+class ZeroD_Chemistry_4_logs(BaseModel):
     """
     Zero Dimensional with Chemistry 4
     
@@ -27,18 +27,26 @@ class ZeroD_Chemistry_4(BaseModel):
         I = self.variables["Current [A]"]
 
         # set internal variables
-        S8 = pybamm.Variable("S8 [g]")
-        S4 = pybamm.Variable("S4 [g]")
-        S2 = pybamm.Variable("S2 [g]")
-        S = pybamm.Variable("S [g]")
-        Sp = pybamm.Variable("Precipitated Sulfur [g]")
+        x8 = pybamm.Variable("exp S8 [g]")
+        x4 = pybamm.Variable("exp S4 [g]")
+        x2 = pybamm.Variable("exp S2 [g]")
+        x1 = pybamm.Variable("exp S1 [g]")
+        xp = pybamm.Variable("exp Precipitated Sulfur [g]")
+        
+        S8 = pybamm.log(x8)
+        S4 = pybamm.log(x4)
+        S2 = pybamm.log(x2)
+        S1 = pybamm.log(x1)
+        Sp = pybamm.log(xp)
+        
 
         #######################################
         # Model parameters as defined in table (1) in [1]. Parameters with 'H' or
         # 'L' in the name represent the high and low plateau parameter, respectively.
         #######################################
         param = self.param
-
+        
+        
         # standard parameters
         R = param.R
         F = param.F
@@ -90,7 +98,7 @@ class ZeroD_Chemistry_4(BaseModel):
         E_M = EM0 + E_M_coef * (pybamm.log(f_m) + 0.5*pybamm.log(S4) - pybamm.log(S2) ) 
 
         # Low plateau potenital [V] as defined by equation (2b) in [1]
-        E_L = EL0 + E_L_coef * (pybamm.log(f_l) + 0.5*pybamm.log(S2) - pybamm.log(S) ) 
+        E_L = EL0 + E_L_coef * (pybamm.log(f_l) + 0.5*pybamm.log(S2) - pybamm.log(S1) ) 
 
         # High plateau over-potenital [V] as defined by equation (6a) in [1]
         eta_H = V - E_H
@@ -110,7 +118,7 @@ class ZeroD_Chemistry_4(BaseModel):
         
         g48 = (I<0)*1/(1 + gamma*pybamm.exp(-kappa*S4))
         g24 = (I<0)*1/(1 + gamma*pybamm.exp(-kappa*S2))
-        g12 = (I<0)*1/(1 + gamma*pybamm.exp(-kappa*S))
+        g12 = (I<0)*1/(1 + gamma*pybamm.exp(-kappa*S1))
         
 
         # High plateau current [A] as defined by equation (5a) in [1]
@@ -138,20 +146,25 @@ class ZeroD_Chemistry_4(BaseModel):
 
         # Differential equation (8a) in [1]
         dS8dt = -(ns8 * Ms * i_H / (nH * F)) - k_s * S8
+        dx8dt = x8*dS8dt
 
         # Differential equation (8b) in [1]
         dS4dt = (ns8 * Ms * i_H / (nH * F)) + k_s * S8 - (ns4 * Ms * i_M / (nM * F))
-
+        dx4dt = x4*dS4dt
+        
         # Differential equation (8c) in [1]
         dS2dt = ns4 * Ms * i_M / (nM * F) - (ns2 * Ms * i_L / (nM * F)) 
-
+        dx2dt = x2*dS2dt
+        
         # Differential equation (8d) in [1]
-        dSdt = (ns2 * Ms * i_L / (nM * F)) - k_p * Sp * (S - S_star) / (v * rho_s)
-
+        dS1dt = (ns2 * Ms * i_L / (nM * F)) - k_p * Sp * (S1 - S_star) / (v * rho_s)
+        dx1dt = x1*dS1dt
+        
         # Differential equation (8e) in [1]
-        dSpdt = k_p * Sp * (S - S_star) / (v * rho_s)
-
-        self.rhs.update({S8: dS8dt, S4: dS4dt, S2: dS2dt, S: dSdt, Sp: dSpdt})
+        dSpdt = k_p * Sp * (S1 - S_star) / (v * rho_s)
+        dxpdt = xp*dSpdt
+        
+        self.rhs.update({x8: dx8dt, x4: dx4dt, x2: dx2dt, x1: dx1dt, xp: dxpdt})
 
         ##############################
         # Model variables
@@ -160,11 +173,15 @@ class ZeroD_Chemistry_4(BaseModel):
         self.variables.update(
             {
                 "Time [s]": pybamm.t * self.timescale,
-                "Capacity [Ah]": pybamm.t * self.timescale * pybamm.abs(I) / 3600,
+                "exp S8 [g]": x8,
+                "exp S4 [g]": x4,
+                "exp S2 [g]": x2,
+                "exp S1 [g]": x1,
+                "exp Precipitated Sulfur [g]": xp,
                 "S8 [g]": S8,
                 "S4 [g]": S4,
                 "S2 [g]": S2,
-                "S [g]": S,
+                "S1 [g]": S1,
                 "Precipitated Sulfur [g]": Sp,
                 "Shuttle coefficient [s-1]": k_s,
                 "Shuttle rate [g-1.s-1]": k_s * S8,
@@ -188,14 +205,14 @@ class ZeroD_Chemistry_4(BaseModel):
         # below. Then, solve eta_H = V, eta_L = V, the algebraic
         # condition, and mass conservation for the remaining values.
         ######################################
-
+        
         self.initial_conditions.update(
             {
-                self.variables["S8 [g]"]: param.S8_initial,
-                self.variables["S4 [g]"]: param.S4_initial,
-                self.variables["S2 [g]"]: param.S2_initial,
-                self.variables["S [g]"]: param.S_initial,
-                self.variables["Precipitated Sulfur [g]"]: param.Sp_initial,
+                self.variables["exp S8 [g]"]: param.S8_initial,
+                self.variables["exp S4 [g]"]: param.S4_initial,
+                self.variables["exp S2 [g]"]: param.S2_initial,
+                self.variables["exp S1 [g]"]: param.S_initial,
+                self.variables["exp Precipitated Sulfur [g]"]: param.Sp_initial,
                 self.variables["Terminal voltage [V]"]: param.V_initial,
             }
         )
