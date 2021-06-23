@@ -11,6 +11,7 @@ from .ZeroD_Chemistry_2 import ZeroD_Chemistry_2
 from .ZeroD_Chemistry_3 import ZeroD_Chemistry_3
 from .ZeroD_Chemistry_4 import ZeroD_Chemistry_4
 from .ZeroD_Chemistry_5 import ZeroD_Chemistry_5
+from .ZeroD_Chemistry_6 import ZeroD_Chemistry_6
 
 from .ZeroD_Chemistry_4_logs import ZeroD_Chemistry_4_logs
 
